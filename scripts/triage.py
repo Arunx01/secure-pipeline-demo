@@ -32,11 +32,14 @@ def is_ignored(finding):
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python3 triage.py semgrep-results.json")
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    fail_on_high = "--fail-on-high" in sys.argv
+
+    if len(args) != 1:
+        print("Usage: python3 triage.py semgrep-results.json [--fail-on-high]")
         sys.exit(1)
 
-    findings = load_findings(sys.argv[1])
+    findings = load_findings(args[0])
     buckets = defaultdict(list)
     ignored = 0
 
@@ -60,6 +63,11 @@ def main():
             line = f["start"]["line"]
             cwe = cwe_of(f["extra"].get("metadata", {}))
             print(f"  - {f['path']}:{line}  [{cwe}]  {rule}")
+
+    # Quality gate: block the build if any HIGH findings remain
+    if fail_on_high and buckets.get("HIGH"):
+        print(f"\nGATE FAILED: {len(buckets['HIGH'])} HIGH finding(s). Fix before merging.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
