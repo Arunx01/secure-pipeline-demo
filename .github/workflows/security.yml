@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Semgrep
-        run: semgrep scan --config p/python --json --output semgrep-results.json
+        run:  semgrep scan --config p/python --config rules/ --json --output semgrep-results.json
       - name: Save results
         uses: actions/upload-artifact@v4
         with:
