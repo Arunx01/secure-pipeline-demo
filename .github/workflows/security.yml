@@ -28,6 +28,8 @@ jobs:
           path: |
             semgrep-results.json
             triage-summary.txt
+      - name: Quality gate (fail on HIGH findings)
+        run: python3 scripts/triage.py semgrep-results.json --fail-on-high
 
   gitleaks:
     name: Secrets scan with Gitleaks
