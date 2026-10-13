@@ -16,11 +16,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Semgrep
         run: semgrep scan --config p/python --config rules/ --json --output semgrep-results.json
+      - name: Triage results
+        run: |
+          python3 scripts/triage.py semgrep-results.json | tee triage-summary.txt
+          { echo '```'; cat triage-summary.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Save results
         uses: actions/upload-artifact@v4
         with:
           name: semgrep-results
-          path: semgrep-results.json
+          path: |
+            semgrep-results.json
+            triage-summary.txt
 
   gitleaks:
     name: Secrets scan with Gitleaks
