@@ -18,7 +18,8 @@ jobs:
         run: semgrep scan --config p/python --config rules/ --json --output semgrep-results.json
       - name: Triage results
         run: |
-          python3 scripts/triage.py semgrep-results.json | tee triage-summary.txt
+          python3 scripts/triage.py semgrep-results.json > triage-summary.txt
+          cat triage-summary.txt
           { echo '```'; cat triage-summary.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Save results
         uses: actions/upload-artifact@v4
